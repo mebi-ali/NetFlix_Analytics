@@ -1,0 +1,769 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "1b237cce",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:26.308898Z",
+     "iopub.status.busy": "2023-01-19T13:14:26.307514Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.459825Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.458426Z"
+    },
+    "papermill": {
+     "duration": 1.163853,
+     "end_time": "2023-01-19T13:14:27.462966",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:26.299113",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Libraries\n",
+    "import numpy as np # linear algebra\n",
+    "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "%matplotlib inline\n",
+    "\n",
+    "## Setting Seaborn\n",
+    "sns.set(style='white', context='paper', palette='cividis')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "b4d94491",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.472733Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.472289Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.485304Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.483903Z"
+    },
+    "papermill": {
+     "duration": 0.020808,
+     "end_time": "2023-01-19T13:14:27.487914",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.467106",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "/kaggle/input/netflix-tv-shows-and-movies/NetFlix.csv\n"
+     ]
+    }
+   ],
+   "source": [
+    "# This Python 3 environment comes with many helpful analytics libraries installed\n",
+    "# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python\n",
+    "# For example, here's several helpful packages to load\n",
+    "\n",
+    "# Input data files are available in the read-only \"../input/\" directory\n",
+    "# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory\n",
+    "\n",
+    "import os\n",
+    "for dirname, _, filenames in os.walk('/kaggle/input'):\n",
+    "    for filename in filenames:\n",
+    "        print(os.path.join(dirname, filename))\n",
+    "\n",
+    "# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using \"Save & Run All\" \n",
+    "# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "9743fd8c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.497973Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.497048Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.642928Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.641916Z"
+    },
+    "papermill": {
+     "duration": 0.153714,
+     "end_time": "2023-01-19T13:14:27.645681",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.491967",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Load Data\n",
+    "nf_df = pd.read_csv('/kaggle/input/netflix-tv-shows-and-movies/NetFlix.csv')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "55818369",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003779,
+     "end_time": "2023-01-19T13:14:27.653795",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.650016",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# *Data Process* \n",
+    "* **Data Shape**\n",
+    "* **Data Head/Sample**\n",
+    "* **Data Types**\n",
+    "* **Missing Values**\n",
+    "* **Describe Data**\n",
+    "* **Data Duplicates**\n",
+    "* **Data Correlation**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a5942b1b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.663485Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.663084Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.668824Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.667568Z"
+    },
+    "papermill": {
+     "duration": 0.014191,
+     "end_time": "2023-01-19T13:14:27.671952",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.657761",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Dataset (rows, col): (7787, 12)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Rows and Columns in Dataset\n",
+    "print(f'Dataset (rows, col): {nf_df.shape}')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "a6fe7526",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.681653Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.681267Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.716741Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.715535Z"
+    },
+    "papermill": {
+     "duration": 0.043218,
+     "end_time": "2023-01-19T13:14:27.719297",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.676079",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Numerical Data:\n",
+      "\n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 7787 entries, 0 to 7786\n",
+      "Data columns (total 2 columns):\n",
+      " #   Column        Non-Null Count  Dtype\n",
+      "---  ------        --------------  -----\n",
+      " 0   release_year  7787 non-null   int64\n",
+      " 1   duration      7787 non-null   int64\n",
+      "dtypes: int64(2)\n",
+      "memory usage: 121.8 KB\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Data Types\n",
+    "print('Numerical Data:\\n') \n",
+    "nf_df.select_dtypes('number').info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "0b4c10a4",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.729214Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.728781Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.749206Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.747506Z"
+    },
+    "papermill": {
+     "duration": 0.028408,
+     "end_time": "2023-01-19T13:14:27.751789",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.723381",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Categorical Data:\n",
+      "\n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 7787 entries, 0 to 7786\n",
+      "Data columns (total 10 columns):\n",
+      " #   Column       Non-Null Count  Dtype \n",
+      "---  ------       --------------  ----- \n",
+      " 0   show_id      7787 non-null   object\n",
+      " 1   type         7787 non-null   object\n",
+      " 2   title        7787 non-null   object\n",
+      " 3   director     5398 non-null   object\n",
+      " 4   cast         7069 non-null   object\n",
+      " 5   country      7280 non-null   object\n",
+      " 6   date_added   7777 non-null   object\n",
+      " 7   rating       7780 non-null   object\n",
+      " 8   genres       7787 non-null   object\n",
+      " 9   description  7787 non-null   object\n",
+      "dtypes: object(10)\n",
+      "memory usage: 608.5+ KB\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('Categorical Data:\\n') \n",
+    "nf_df.select_dtypes('object').info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "12f82eea",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.762136Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.761708Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.773991Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.772738Z"
+    },
+    "papermill": {
+     "duration": 0.020532,
+     "end_time": "2023-01-19T13:14:27.776524",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.755992",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Missing Values in Dataset:\n",
+      "\n",
+      "show_id            0\n",
+      "type               0\n",
+      "title              0\n",
+      "director        2389\n",
+      "cast             718\n",
+      "country          507\n",
+      "date_added        10\n",
+      "release_year       0\n",
+      "rating             7\n",
+      "duration           0\n",
+      "genres             0\n",
+      "description        0\n",
+      "dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Missing Values\n",
+    "print(f'\\nMissing Values in Dataset:\\n\\n{nf_df.isnull().sum()}')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "f7cf4ce2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.786737Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.786344Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.811276Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.810299Z"
+    },
+    "papermill": {
+     "duration": 0.032897,
+     "end_time": "2023-01-19T13:14:27.813621",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.780724",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Duplicates in Dataset: 0\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Duplicates \n",
+    "print(f'Duplicates in Dataset: {nf_df.duplicated().sum()}')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "619f9ccb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.824020Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.823563Z",
+     "iopub.status.idle": "2023-01-19T13:14:27.894749Z",
+     "shell.execute_reply": "2023-01-19T13:14:27.893864Z"
+    },
+    "papermill": {
+     "duration": 0.079048,
+     "end_time": "2023-01-19T13:14:27.897075",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.818027",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>show_id</th>\n",
+       "      <th>type</th>\n",
+       "      <th>title</th>\n",
+       "      <th>director</th>\n",
+       "      <th>cast</th>\n",
+       "      <th>country</th>\n",
+       "      <th>date_added</th>\n",
+       "      <th>release_year</th>\n",
+       "      <th>rating</th>\n",
+       "      <th>duration</th>\n",
+       "      <th>genres</th>\n",
+       "      <th>description</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>count</th>\n",
+       "      <td>7787</td>\n",
+       "      <td>7787</td>\n",
+       "      <td>7787</td>\n",
+       "      <td>5398</td>\n",
+       "      <td>7069</td>\n",
+       "      <td>7280</td>\n",
+       "      <td>7777</td>\n",
+       "      <td>7787.000000</td>\n",
+       "      <td>7780</td>\n",
+       "      <td>7787.000000</td>\n",
+       "      <td>7787</td>\n",
+       "      <td>7787</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>unique</th>\n",
+       "      <td>7787</td>\n",
+       "      <td>2</td>\n",
+       "      <td>7787</td>\n",
+       "      <td>4049</td>\n",
+       "      <td>6831</td>\n",
+       "      <td>681</td>\n",
+       "      <td>1565</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>14</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>492</td>\n",
+       "      <td>7769</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>top</th>\n",
+       "      <td>s1</td>\n",
+       "      <td>Movie</td>\n",
+       "      <td>3%</td>\n",
+       "      <td>Raúl Campos, Jan Suter</td>\n",
+       "      <td>David Attenborough</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>01-Jan-20</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>TV-MA</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Documentaries</td>\n",
+       "      <td>Multiple women report their husbands as missin...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>freq</th>\n",
+       "      <td>1</td>\n",
+       "      <td>5377</td>\n",
+       "      <td>1</td>\n",
+       "      <td>18</td>\n",
+       "      <td>18</td>\n",
+       "      <td>2555</td>\n",
+       "      <td>118</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2863</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>334</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>mean</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2013.932580</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>69.122769</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>std</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>8.757395</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>50.950743</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>min</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1925.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>25%</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2013.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>50%</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2017.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>88.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>75%</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2018.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>106.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>max</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2021.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>312.000000</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       show_id   type title                director                cast  \\\n",
+       "count     7787   7787  7787                    5398                7069   \n",
+       "unique    7787      2  7787                    4049                6831   \n",
+       "top         s1  Movie    3%  Raúl Campos, Jan Suter  David Attenborough   \n",
+       "freq         1   5377     1                      18                  18   \n",
+       "mean       NaN    NaN   NaN                     NaN                 NaN   \n",
+       "std        NaN    NaN   NaN                     NaN                 NaN   \n",
+       "min        NaN    NaN   NaN                     NaN                 NaN   \n",
+       "25%        NaN    NaN   NaN                     NaN                 NaN   \n",
+       "50%        NaN    NaN   NaN                     NaN                 NaN   \n",
+       "75%        NaN    NaN   NaN                     NaN                 NaN   \n",
+       "max        NaN    NaN   NaN                     NaN                 NaN   \n",
+       "\n",
+       "              country date_added  release_year rating     duration  \\\n",
+       "count            7280       7777   7787.000000   7780  7787.000000   \n",
+       "unique            681       1565           NaN     14          NaN   \n",
+       "top     United States  01-Jan-20           NaN  TV-MA          NaN   \n",
+       "freq             2555        118           NaN   2863          NaN   \n",
+       "mean              NaN        NaN   2013.932580    NaN    69.122769   \n",
+       "std               NaN        NaN      8.757395    NaN    50.950743   \n",
+       "min               NaN        NaN   1925.000000    NaN     1.000000   \n",
+       "25%               NaN        NaN   2013.000000    NaN     2.000000   \n",
+       "50%               NaN        NaN   2017.000000    NaN    88.000000   \n",
+       "75%               NaN        NaN   2018.000000    NaN   106.000000   \n",
+       "max               NaN        NaN   2021.000000    NaN   312.000000   \n",
+       "\n",
+       "               genres                                        description  \n",
+       "count            7787                                               7787  \n",
+       "unique            492                                               7769  \n",
+       "top     Documentaries  Multiple women report their husbands as missin...  \n",
+       "freq              334                                                  3  \n",
+       "mean              NaN                                                NaN  \n",
+       "std               NaN                                                NaN  \n",
+       "min               NaN                                                NaN  \n",
+       "25%               NaN                                                NaN  \n",
+       "50%               NaN                                                NaN  \n",
+       "75%               NaN                                                NaN  \n",
+       "max               NaN                                                NaN  "
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Description  of Data\n",
+    "nf_df.describe(include=['object', 'number'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "4b46e84a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-01-19T13:14:27.908741Z",
+     "iopub.status.busy": "2023-01-19T13:14:27.908071Z",
+     "iopub.status.idle": "2023-01-19T13:14:28.199206Z",
+     "shell.execute_reply": "2023-01-19T13:14:28.197807Z"
+    },
+    "papermill": {
+     "duration": 0.300074,
+     "end_time": "2023-01-19T13:14:28.202014",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:27.901940",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Text(0.5, 1.0, 'Correlation in Dataset\\n')"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 2 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# Correlations in Dataset\n",
+    "ax = sns.heatmap(nf_df.corr(), annot=True, cmap='YlGnBu')\n",
+    "ax.set_title(\"Correlation in Dataset\\n\", fontsize=20)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ff568eeb",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004858,
+     "end_time": "2023-01-19T13:14:28.212107",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:28.207249",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# About Data \n",
+    "#### This Dataset consist **7787 rows** and **12 columns**.\n",
+    "\n",
+    "### **Data Types**\n",
+    "#### This Dataset contains **2 Numrical Data and 10 Categorical Data**\n",
+    "\n",
+    "### **Missing Values**\n",
+    "    director        2389\n",
+    "    cast             718\n",
+    "    country          507\n",
+    "    date_added        10\n",
+    "    rating             7\n",
+    "\n",
+    "### **Description**\n",
+    "#### Netflix (NFLX) is the dominant company in the on-demand media industry, with 167 million paying subscribers around the world.By creating compelling original programming, analyzing its user data to serve subscribers better, and above all by letting people consume content in the ways they prefer, Netflix disrupted the television industry and forced cable companies to change the way they do business.\n",
+    "\n",
+    "#### Features present:\n",
+    "    Show_ID-Id of the movie/TV show\n",
+    "    type-Movie or TV show\n",
+    "    title-Title of the movie/TV show\n",
+    "    director-Director of the movie/TV show\n",
+    "    Cast-actors/actress who have acted in the movie/TV show\n",
+    "    country-Country the movie/TV show belongs to\n",
+    "    date_added-Aired dated-Released date on netflix\n",
+    "    release year-Original movie/TV show release date\n",
+    "    rating-Rating of the movie/TV show\n",
+    "    duration-Length of the movie\n",
+    "    genre-Genre of the movie\n",
+    "    Description-Summary of the movie\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d225e59e",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004906,
+     "end_time": "2023-01-19T13:14:28.222180",
+     "exception": false,
+     "start_time": "2023-01-19T13:14:28.217274",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.12"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 11.802439,
+   "end_time": "2023-01-19T13:14:28.949673",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2023-01-19T13:14:17.147234",
+   "version": "2.3.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
